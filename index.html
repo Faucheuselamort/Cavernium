@@ -43,6 +43,7 @@
   a{color:inherit;}
   .hidden{display:none !important;}
   img{max-width:100%; display:block;}
+  button{font:inherit;}
 
   /* ---------- Starfield background ---------- */
   .stars{
@@ -112,16 +113,20 @@
     background:rgba(5,3,8,0.82);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
+    flex-wrap:wrap; gap:12px;
   }
-  .brand{display:flex; align-items:center; gap:12px; text-decoration:none;}
+  .brand{display:flex; align-items:center; gap:12px; text-decoration:none; background:none; border:none; cursor:pointer; padding:0; color:inherit;}
   .brand img{width:38px; height:38px; border-radius:50%;}
   .brand span{font-family:var(--serif); font-weight:700; font-size:1.15rem; letter-spacing:0.04em; color:var(--white-glow);}
-  nav{display:flex; align-items:center; gap:28px;}
-  nav a{
-    text-decoration:none; color:var(--text-dim); font-size:0.92rem; font-weight:600;
-    transition:color 0.2s;
+  nav{display:flex; align-items:center; gap:22px;}
+  .nav-links{display:flex; gap:6px;}
+  .nav-btn{
+    text-decoration:none; background:none; border:1px solid transparent; color:var(--text-dim);
+    font-size:0.92rem; font-weight:700; cursor:pointer; padding:8px 14px; border-radius:var(--radius);
+    transition:color 0.2s, border-color 0.2s, background 0.2s;
   }
-  nav a:hover{color:var(--white-glow);}
+  .nav-btn:hover{color:var(--white-glow);}
+  .nav-btn.active{color:var(--white-glow); border-color:var(--line); background:rgba(155,75,255,0.1);}
   #lang-toggle{
     border:1px solid var(--line); background:transparent; color:var(--text-dim);
     font-family:var(--sans); font-weight:700; font-size:0.85rem;
@@ -129,14 +134,15 @@
     transition:border-color 0.2s, color 0.2s;
   }
   #lang-toggle:hover{border-color:var(--blue); color:var(--white-glow);}
-  .nav-links{display:flex; gap:24px;}
   @media (max-width:700px){
     .nav-links{display:none;}
   }
 
+  /* ---------- Pages ---------- */
+  .page{position:relative; z-index:1;}
+
   /* ---------- Hero ---------- */
   #hero{
-    position:relative; z-index:1;
     padding:100px 6vw 90px;
     display:grid; grid-template-columns: 1.1fr 0.9fr; gap:50px;
     align-items:center;
@@ -173,7 +179,7 @@
   }
   .btn-primary:hover{transform:translateY(-2px); box-shadow:0 0 40px rgba(122,47,224,0.55);}
   .btn-ghost{
-    border-color:var(--line); color:var(--text);
+    border-color:var(--line); color:var(--text); background:none;
   }
   .btn-ghost:hover{border-color:var(--blue); color:var(--white-glow);}
   .hero-visual{position:relative; display:flex; justify-content:center;}
@@ -183,7 +189,7 @@
   }
 
   /* ---------- Section shells ---------- */
-  section{position:relative; z-index:1;}
+  section{position:relative;}
   .section-inner{max-width:1100px; margin:0 auto; padding:70px 6vw;}
   .section-head{max-width:640px; margin-bottom:44px;}
   .section-head h2{
@@ -191,6 +197,14 @@
     color:var(--white-glow); margin:0 0 14px;
   }
   .section-head p{color:var(--text-dim); margin:0; font-size:1.02rem;}
+  .page-head{
+    max-width:1100px; margin:0 auto; padding:60px 6vw 10px;
+  }
+  .page-head h1{
+    font-family:var(--serif); font-weight:700; font-size:clamp(2rem, 3.6vw, 2.9rem);
+    color:var(--white-glow); margin:0 0 12px;
+  }
+  .page-head p{color:var(--text-dim); margin:0; max-width:65ch; font-size:1.02rem;}
 
   /* ---------- About / stats ---------- */
   #about{border-top:1px solid var(--line);}
@@ -203,15 +217,29 @@
   .about-card .num{font-family:var(--serif); font-size:2rem; font-weight:700; color:var(--gold); display:block; margin-bottom:6px;}
   .about-card p{margin:0; color:var(--text-dim); font-size:0.95rem;}
 
+  /* ---------- Notice banner (provisional data) ---------- */
+  .notice{
+    max-width:1100px; margin:0 auto; padding:0 6vw 30px;
+  }
+  .notice-inner{
+    border:1px dashed rgba(255,179,71,0.4);
+    background:rgba(255,179,71,0.06);
+    border-radius:var(--radius);
+    padding:14px 18px;
+    color:var(--text-dim);
+    font-size:0.88rem;
+  }
+  .notice-inner strong{color:var(--gold);}
+
   /* ---------- Zones path ---------- */
-  #zones{border-top:1px solid var(--line);}
   .path{
+    max-width:1100px; margin:0 auto; padding:10px 6vw 70px;
     position:relative;
-    padding-left:36px;
+    padding-left:calc(6vw + 26px);
   }
   .path::before{
     content:"";
-    position:absolute; left:11px; top:6px; bottom:6px; width:2px;
+    position:absolute; left:calc(6vw + 1px); top:6px; bottom:6px; width:2px;
     background:linear-gradient(180deg, #8a7660, #9b4bff 40%, #ffb347 70%, #ffe9a8);
     opacity:0.5;
   }
@@ -224,7 +252,7 @@
   }
   .zone::before{
     content:"";
-    position:absolute; left:-36px; top:22px;
+    position:absolute; left:-26px; top:22px;
     width:12px; height:12px; border-radius:50%;
     background:var(--zone-color, var(--purple));
     box-shadow:0 0 12px var(--zone-color, var(--purple));
@@ -242,32 +270,53 @@
     min-width:34px;
   }
   .zone-icon{font-size:1.3rem;}
-  .zone-name{font-weight:700; font-size:1.05rem; color:var(--white-glow); flex:1;}
+  .zone-titles{flex:1; min-width:0;}
+  .zone-name{font-weight:700; font-size:1.08rem; color:var(--white-glow); display:block;}
+  .zone-theme{font-size:0.82rem; color:var(--text-dim); display:block; margin-top:2px;}
   .zone-chevron{
     color:var(--text-dim); font-size:1rem; transition:transform 0.2s;
     flex-shrink:0;
   }
   .zone.open .zone-chevron{transform:rotate(180deg);}
   .zone-body{
-    max-height:0; overflow:hidden; transition:max-height 0.25s ease;
+    max-height:0; overflow:hidden; transition:max-height 0.3s ease;
   }
-  .zone.open .zone-body{max-height:400px;}
+  .zone.open .zone-body{max-height:900px;}
   .zone-items{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:10px 16px;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
     padding:0 20px 22px 20px;
     border-top:1px solid var(--line);
     padding-top:16px;
   }
-  @media (max-width:600px){ .zone-items{grid-template-columns:1fr 1fr;} }
-  .zone-items li{
-    list-style:none; font-size:0.9rem; color:var(--text-dim);
-    padding-left:14px; position:relative;
+  @media (max-width:700px){ .zone-items{grid-template-columns:1fr 1fr;} }
+  @media (max-width:460px){ .zone-items{grid-template-columns:1fr;} }
+
+  /* mineral clickable box */
+  .mineral{
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--bg-panel-2);
+    overflow:hidden;
   }
-  .zone-items li::before{
-    content:"·"; position:absolute; left:0; color:var(--zone-color, var(--purple));
-    font-weight:800;
+  .mineral-btn{
+    width:100%; text-align:left; background:none; border:none; cursor:pointer;
+    color:var(--text); padding:10px 12px; font-size:0.9rem; font-weight:600;
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
   }
-  .path-controls{display:flex; justify-content:flex-end; margin-bottom:16px;}
+  .mineral-btn::after{
+    content:"+"; color:var(--zone-color, var(--purple)); font-weight:800; font-size:1.05rem; flex-shrink:0;
+  }
+  .mineral.open .mineral-btn::after{content:"–";}
+  .mineral-detail{
+    max-height:0; overflow:hidden; transition:max-height 0.2s ease;
+    border-top:1px solid transparent;
+  }
+  .mineral.open .mineral-detail{max-height:120px; border-top-color:var(--line);}
+  .mineral-detail-inner{padding:10px 12px; font-size:0.82rem; color:var(--text-dim);}
+  .mineral-detail-inner .row{display:flex; justify-content:space-between; margin-bottom:4px;}
+  .mineral-detail-inner .row span:last-child{color:var(--white-glow); font-weight:700;}
+
+  .path-controls{display:flex; justify-content:flex-end; margin-bottom:16px; max-width:1100px; margin-left:auto; margin-right:auto; padding:0 6vw;}
   .path-controls button{
     background:none; border:1px solid var(--line); color:var(--text-dim);
     padding:8px 16px; border-radius:var(--radius); font-family:var(--sans);
@@ -278,7 +327,7 @@
   /* Infinitium final card */
   .infinitium{
     position:relative;
-    margin-top:28px; margin-left:-36px;
+    margin-top:28px;
     padding:34px 28px;
     text-align:center;
     border:1px solid rgba(255,220,150,0.35);
@@ -293,6 +342,30 @@
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
   .infinitium p{margin:0; color:var(--text-dim); max-width:50ch; margin:0 auto;}
+
+  /* ---------- Equipment ---------- */
+  .equip-list{max-width:1100px; margin:0 auto; padding:10px 6vw 70px; display:flex; flex-direction:column; gap:12px;}
+  .equip-row{
+    display:grid; grid-template-columns:38px 1fr 1fr; gap:16px; align-items:center;
+    border:1px solid var(--line); background:var(--bg-panel); border-radius:var(--radius);
+    padding:14px 18px;
+  }
+  @media (max-width:680px){
+    .equip-row{grid-template-columns:1fr; gap:10px;}
+  }
+  .equip-tier{
+    font-family:var(--serif); font-weight:700; color:var(--tier-color, var(--purple));
+    font-size:0.95rem;
+  }
+  .equip-item{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .equip-item .name{font-weight:700; color:var(--white-glow); font-size:0.95rem;}
+  .equip-item .stat{color:var(--text-dim); font-size:0.82rem;}
+  .equip-item .price{color:var(--gold); font-weight:700; font-size:0.9rem; white-space:nowrap;}
+  .equip-header-row{
+    display:grid; grid-template-columns:38px 1fr 1fr; gap:16px;
+    padding:0 18px; margin-bottom:2px; color:var(--text-dim); font-size:0.78rem; font-weight:700; letter-spacing:0.02em;
+  }
+  @media (max-width:680px){ .equip-header-row{display:none;} }
 
   /* ---------- Footer ---------- */
   footer{
@@ -326,69 +399,92 @@
 <div id="site" class="hidden">
 
   <header>
-    <a class="brand" href="#hero">
+    <button class="brand" data-page="home" type="button">
       <img src="assets/cavernium-logo.webp" alt="Cavernium logo">
       <span>CAVERNIUM</span>
-    </a>
+    </button>
     <nav>
       <div class="nav-links">
-        <a href="#about" data-i18n="nav.about"></a>
-        <a href="#zones" data-i18n="nav.zones"></a>
+        <button class="nav-btn" data-page="home" data-i18n="nav.home"></button>
+        <button class="nav-btn" data-page="zones" data-i18n="nav.zones"></button>
+        <button class="nav-btn" data-page="equipment" data-i18n="nav.equipment"></button>
       </div>
       <button id="lang-toggle" type="button"></button>
     </nav>
   </header>
 
-  <section id="hero">
-    <div class="hero-copy">
-      <p class="eyebrow-free" data-i18n="hero.eyebrow"></p>
-      <h1 class="hero-title" data-i18n="hero.title"></h1>
-      <p class="hero-desc" data-i18n="hero.desc"></p>
-      <div class="hero-ctas">
-        <a class="btn btn-primary" href="#" id="play-link" data-i18n="hero.cta_play"></a>
-        <a class="btn btn-ghost" href="#zones" data-i18n="hero.cta_zones"></a>
+  <!-- ===== PAGE: HOME ===== -->
+  <div class="page" id="page-home">
+    <section id="hero">
+      <div class="hero-copy">
+        <p class="eyebrow-free" data-i18n="hero.eyebrow"></p>
+        <h1 class="hero-title" data-i18n="hero.title"></h1>
+        <p class="hero-desc" data-i18n="hero.desc"></p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#" id="play-link" data-i18n="hero.cta_play"></a>
+          <button class="btn btn-ghost" data-page="zones" data-i18n="hero.cta_zones"></button>
+        </div>
       </div>
-    </div>
-    <div class="hero-visual">
-      <img src="assets/cavernium-logo.webp" alt="Cavernium">
-    </div>
-  </section>
+      <div class="hero-visual">
+        <img src="assets/cavernium-logo.webp" alt="Cavernium">
+      </div>
+    </section>
 
-  <section id="about">
-    <div class="section-inner">
-      <div class="section-head">
-        <h2 data-i18n="about.title"></h2>
-        <p data-i18n="about.desc"></p>
+    <section id="about">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2 data-i18n="about.title"></h2>
+          <p data-i18n="about.desc"></p>
+        </div>
+        <div class="about-grid">
+          <div class="about-card">
+            <span class="num">21</span>
+            <p data-i18n="about.card1"></p>
+          </div>
+          <div class="about-card">
+            <span class="num">126+</span>
+            <p data-i18n="about.card2"></p>
+          </div>
+          <div class="about-card">
+            <span class="num">♾️</span>
+            <p data-i18n="about.card3"></p>
+          </div>
+        </div>
       </div>
-      <div class="about-grid">
-        <div class="about-card">
-          <span class="num">21</span>
-          <p data-i18n="about.card1"></p>
-        </div>
-        <div class="about-card">
-          <span class="num">126+</span>
-          <p data-i18n="about.card2"></p>
-        </div>
-        <div class="about-card">
-          <span class="num">♾️</span>
-          <p data-i18n="about.card3"></p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <section id="zones">
-    <div class="section-inner">
-      <div class="section-head">
-        <h2 data-i18n="zones.title"></h2>
-        <p data-i18n="zones.desc"></p>
-      </div>
-      <div class="path-controls">
-        <button id="toggle-all" data-i18n="zones.expand_all"></button>
-      </div>
-      <div class="path" id="path-container"></div>
+  <!-- ===== PAGE: ZONES ===== -->
+  <div class="page hidden" id="page-zones">
+    <div class="page-head">
+      <h1 data-i18n="zones.title"></h1>
+      <p data-i18n="zones.desc"></p>
     </div>
-  </section>
+    <div class="notice">
+      <div class="notice-inner" data-i18n="zones.notice"></div>
+    </div>
+    <div class="path-controls">
+      <button id="toggle-all" data-i18n="zones.expand_all"></button>
+    </div>
+    <div class="path" id="path-container"></div>
+  </div>
+
+  <!-- ===== PAGE: EQUIPMENT ===== -->
+  <div class="page hidden" id="page-equipment">
+    <div class="page-head">
+      <h1 data-i18n="equip.title"></h1>
+      <p data-i18n="equip.desc"></p>
+    </div>
+    <div class="notice">
+      <div class="notice-inner" data-i18n="equip.notice"></div>
+    </div>
+    <div class="equip-header-row">
+      <span data-i18n="equip.col_tier"></span>
+      <span data-i18n="equip.col_pickaxe"></span>
+      <span data-i18n="equip.col_bag"></span>
+    </div>
+    <div class="equip-list" id="equip-container"></div>
+  </div>
 
   <footer>
     <p data-i18n="footer.note"></p>
@@ -399,77 +495,18 @@
 
 <script>
 /* ============ DATA ============ */
-const ZONES = [
-  {icon:"🟫", color:"#8a7660", fr:"Cailloux basiques", en:"Basic Rocks",
-    items:[["Caillou Brut","Raw Pebble"],["Pierre Fissurée","Cracked Stone"],["Pierre Sableuse","Sandy Stone"],
-           ["Pierre Terne","Dull Stone"],["Roche Poussiéreuse","Dusty Rock"],["Pierre Craquelée","Crackled Stone"]]},
-  {icon:"⚫", color:"#6b7280", fr:"Pierres communes", en:"Common Stones",
-    items:[["Silex Rugueux","Rough Flint"],["Grès Compact","Compact Sandstone"],["Calcaire Brut","Raw Limestone"],
-           ["Schiste Fragile","Fragile Shale"],["Ardoise Terne","Dull Slate"],["Pierre Sombre","Dark Stone"]]},
-  {icon:"🪨", color:"#9a9a9a", fr:"Roches solides", en:"Solid Rocks",
-    items:[["Granite Brut","Raw Granite"],["Diorite","Diorite"],["Andésite","Andesite"],
-           ["Gneiss","Gneiss"],["Marbre Terne","Dull Marble"],["Basalte Dense","Dense Basalt"]]},
-  {icon:"🌫️", color:"#8fa8c9", fr:"Minéraux simples", en:"Simple Minerals",
-    items:[["Quartz Brut","Raw Quartz"],["Quartz Laiteux","Milky Quartz"],["Quartz Trouble","Cloudy Quartz"],
-           ["Cristal Fendu","Split Crystal"],["Pierre Cristallisée","Crystallized Stone"],["Roche Minéralisée","Mineralized Rock"]]},
-  {icon:"🔵", color:"#5fa8e0", fr:"Premiers cristaux", en:"First Crystals",
-    items:[["Quartz Clair","Clear Quartz"],["Quartz Fumé","Smoky Quartz"],["Quartz Rose","Rose Quartz"],
-           ["Améthyste Terne","Dull Amethyst"],["Fluorite Pâle","Pale Fluorite"],["Calcite Cristalline","Crystalline Calcite"]]},
-  {icon:"🟢", color:"#4caf7d", fr:"Minéraux colorés", en:"Colored Minerals",
-    items:[["Malachite Rugueuse","Rough Malachite"],["Azurite Terne","Dull Azurite"],["Agate Brute","Raw Agate"],
-           ["Onyx Fendu","Split Onyx"],["Jade Mat","Matte Jade"],["Hématite Brillante","Shiny Hematite"]]},
-  {icon:"💠", color:"#3ecfc0", fr:"Gemmes communes", en:"Common Gems",
-    items:[["Topaze Brute","Raw Topaz"],["Lapis Lazuli Brut","Raw Lapis Lazuli"],["Grenat Terne","Dull Garnet"],
-           ["Péridot Brut","Raw Peridot"],["Tourmaline Sombre","Dark Tourmaline"],["Spinelle Mat","Matte Spinel"]]},
-  {icon:"💎", color:"#f0c419", fr:"Gemmes raffinées", en:"Refined Gems",
-    items:[["Topaze Claire","Clear Topaz"],["Grenat Pur","Pure Garnet"],["Péridot Lumineux","Radiant Peridot"],
-           ["Tourmaline Pure","Pure Tourmaline"],["Spinelle Brillant","Brilliant Spinel"],["Citrine Dorée","Golden Citrine"]]},
-  {icon:"✨", color:"#8fd9ff", fr:"Gemmes rares", en:"Rare Gems",
-    items:[["Aigue-Marine","Aquamarine"],["Morganite","Morganite"],["Tanzanite","Tanzanite"],
-           ["Alexandrite","Alexandrite"],["Zircon Lumineux","Radiant Zircon"],["Opale Claire","Clear Opal"]]},
-  {icon:"💍", color:"#2f6fed", fr:"Gemmes nobles", en:"Noble Gems",
-    items:[["Saphir Brut","Raw Sapphire"],["Rubis Brut","Raw Ruby"],["Émeraude Brute","Raw Emerald"],
-           ["Saphir Poli","Polished Sapphire"],["Rubis Poli","Polished Ruby"],["Émeraude Polie","Polished Emerald"]]},
-  {icon:"👑", color:"#dfe8ff", fr:"Gemmes majeures", en:"Major Gems",
-    items:[["Saphir Pur","Pure Sapphire"],["Rubis Pur","Pure Ruby"],["Émeraude Pure","Pure Emerald"],
-           ["Diamant Brut","Raw Diamond"],["Diamant Taillé","Cut Diamond"],["Diamant Parfait","Perfect Diamond"]]},
-  {icon:"🌑", color:"#5b3d8f", fr:"Profondeurs obscures", en:"Dark Depths",
-    items:[["Obsidienne Noire","Black Obsidian"],["Cristal Obscur","Obscure Crystal"],["Pierre Nocturne","Night Stone"],
-           ["Gemme Sombre","Dark Gem"],["Cristal Dense","Dense Crystal"],["Roche Abyssale","Abyssal Rock"]]},
-  {icon:"🔥", color:"#ff5a36", fr:"Grottes volcaniques", en:"Volcanic Caves",
-    items:[["Pierre de Lave","Lava Stone"],["Basalte Volcanique","Volcanic Basalt"],["Obsidienne Rouge","Red Obsidian"],
-           ["Cristal Magmatique","Magmatic Crystal"],["Gemme Incandescente","Incandescent Gem"],["Cœur de Lave","Heart of Lava"]]},
-  {icon:"❄️", color:"#7fe8ff", fr:"Grottes gelées", en:"Frozen Caves",
-    items:[["Glace Minérale","Mineral Ice"],["Cristal de Givre","Frost Crystal"],["Quartz Gelé","Frozen Quartz"],
-           ["Gemme Polaire","Polar Gem"],["Cristal Boréal","Boreal Crystal"],["Noyau Gelé","Frozen Core"]]},
-  {icon:"⚡", color:"#b13bff", fr:"Cristaux énergétiques", en:"Energetic Crystals",
-    items:[["Cristal Chargé","Charged Crystal"],["Cristal Vibrant","Vibrant Crystal"],["Cristal Lumineux","Luminous Crystal"],
-           ["Cristal Électrique","Electric Crystal"],["Noyau Énergétique","Energy Core"],["Essence Cristallisée","Crystallized Essence"]]},
-  {icon:"🌌", color:"#5b3bff", fr:"Cristaux cosmiques", en:"Cosmic Crystals",
-    items:[["Cristal Stellaire","Stellar Crystal"],["Pierre Astrale","Astral Stone"],["Gemme Cosmique","Cosmic Gem"],
-           ["Cristal Céleste","Celestial Crystal"],["Fragment Cosmique","Cosmic Fragment"],["Cœur Stellaire","Stellar Heart"]]},
-  {icon:"🌀", color:"#ff3bd0", fr:"Réalité instable", en:"Unstable Reality",
-    items:[["Cristal Distordu","Distorted Crystal"],["Gemme Fractale","Fractal Gem"],["Pierre Paradoxale","Paradox Stone"],
-           ["Cristal Anormal","Anomalous Crystal"],["Noyau Rift","Rift Core"],["Essence Altérée","Altered Essence"]]},
-  {icon:"⏳", color:"#6c2bd9", fr:"Temps & espace", en:"Time & Space",
-    items:[["Cristal Temporel","Temporal Crystal"],["Pierre Chronique","Chronal Stone"],["Gemme du Vide","Gem of the Void"],
-           ["Cristal de Singularité","Singularity Crystal"],["Noyau Spatio-Temporel","Spacetime Core"],["Essence du Temps","Essence of Time"]]},
-  {icon:"👼", color:"#ffe9a8", fr:"Cristaux sacrés", en:"Sacred Crystals",
-    items:[["Cristal Sacré","Sacred Crystal"],["Gemme Divine","Divine Gem"],["Pierre Bénie","Blessed Stone"],
-           ["Cristal Célestial","Heavenly Crystal"],["Essence Pure","Pure Essence"],["Cœur Sacré","Sacred Heart"]]},
-  {icon:"🌈", color:"#ffd166", fr:"Origine du monde", en:"Origin of the World",
-    items:[["Cristal Originel","Primal Crystal"],["Pierre Primordiale","Primordial Stone"],["Gemme Absolue","Absolute Gem"],
-           ["Cristal Universel","Universal Crystal"],["Noyau de Création","Core of Creation"],["Essence du Monde","Essence of the World"]]},
-  {icon:"🏁", color:"#d9c4ff", fr:"Ultime (avant Infinitium)", en:"Ultimate (before Infinitium)",
-    items:[["Cristal Ultima","Ultima Crystal"],["Pierre Parfaite","Perfect Stone"],["Gemme Transcendante","Transcendent Gem"],
-           ["Cristal Éternel","Eternal Crystal"],["Noyau Absolu","Absolute Core"],["Essence Suprême","Supreme Essence"]]}
-];
+const ZONES = [{"icon": "🟫", "color": "#8a7660", "nameFr": "Carrière Poussiéreuse", "nameEn": "Dusty Quarry", "themeFr": "Cailloux basiques", "themeEn": "Basic Rocks", "items": [{"fr": "Caillou Brut", "en": "Raw Pebble", "value": 10, "lo": 10, "hi": 10}, {"fr": "Pierre Fissurée", "en": "Cracked Stone", "value": 10, "lo": 10, "hi": 10}, {"fr": "Pierre Sableuse", "en": "Sandy Stone", "value": 10, "lo": 10, "hi": 10}, {"fr": "Pierre Terne", "en": "Dull Stone", "value": 10, "lo": 10, "hi": 10}, {"fr": "Roche Poussiéreuse", "en": "Dusty Rock", "value": 15, "lo": 10, "hi": 20}, {"fr": "Pierre Craquelée", "en": "Crackled Stone", "value": 15, "lo": 10, "hi": 20}]}, {"icon": "⚫", "color": "#6b7280", "nameFr": "Tunnel de Silex", "nameEn": "Flint Tunnel", "themeFr": "Pierres communes", "themeEn": "Common Stones", "items": [{"fr": "Silex Rugueux", "en": "Rough Flint", "value": 10, "lo": 10, "hi": 10}, {"fr": "Grès Compact", "en": "Compact Sandstone", "value": 15, "lo": 10, "hi": 20}, {"fr": "Calcaire Brut", "en": "Raw Limestone", "value": 15, "lo": 10, "hi": 20}, {"fr": "Schiste Fragile", "en": "Fragile Shale", "value": 15, "lo": 10, "hi": 20}, {"fr": "Ardoise Terne", "en": "Dull Slate", "value": 20, "lo": 15, "hi": 25}, {"fr": "Pierre Sombre", "en": "Dark Stone", "value": 25, "lo": 20, "hi": 30}]}, {"icon": "🪨", "color": "#9a9a9a", "nameFr": "Galerie de Granit", "nameEn": "Granite Gallery", "themeFr": "Roches solides", "themeEn": "Solid Rocks", "items": [{"fr": "Granite Brut", "en": "Raw Granite", "value": 20, "lo": 15, "hi": 25}, {"fr": "Diorite", "en": "Diorite", "value": 20, "lo": 15, "hi": 25}, {"fr": "Andésite", "en": "Andesite", "value": 25, "lo": 20, "hi": 30}, {"fr": "Gneiss", "en": "Gneiss", "value": 25, "lo": 20, "hi": 30}, {"fr": "Marbre Terne", "en": "Dull Marble", "value": 30, "lo": 25, "hi": 35}, {"fr": "Basalte Dense", "en": "Dense Basalt", "value": 35, "lo": 30, "hi": 45}]}, {"icon": "🌫️", "color": "#8fa8c9", "nameFr": "Veine Trouble", "nameEn": "Cloudy Vein", "themeFr": "Minéraux simples", "themeEn": "Simple Minerals", "items": [{"fr": "Quartz Brut", "en": "Raw Quartz", "value": 30, "lo": 25, "hi": 35}, {"fr": "Quartz Laiteux", "en": "Milky Quartz", "value": 35, "lo": 30, "hi": 45}, {"fr": "Quartz Trouble", "en": "Cloudy Quartz", "value": 35, "lo": 30, "hi": 45}, {"fr": "Cristal Fendu", "en": "Split Crystal", "value": 40, "lo": 35, "hi": 50}, {"fr": "Pierre Cristallisée", "en": "Crystallized Stone", "value": 50, "lo": 40, "hi": 60}, {"fr": "Roche Minéralisée", "en": "Mineralized Rock", "value": 55, "lo": 45, "hi": 65}]}, {"icon": "🔵", "color": "#5fa8e0", "nameFr": "Grotte de Calcite", "nameEn": "Calcite Grotto", "themeFr": "Premiers cristaux", "themeEn": "First Crystals", "items": [{"fr": "Quartz Clair", "en": "Clear Quartz", "value": 45, "lo": 35, "hi": 55}, {"fr": "Quartz Fumé", "en": "Smoky Quartz", "value": 50, "lo": 40, "hi": 60}, {"fr": "Quartz Rose", "en": "Rose Quartz", "value": 60, "lo": 50, "hi": 75}, {"fr": "Améthyste Terne", "en": "Dull Amethyst", "value": 65, "lo": 55, "hi": 80}, {"fr": "Fluorite Pâle", "en": "Pale Fluorite", "value": 75, "lo": 60, "hi": 90}, {"fr": "Calcite Cristalline", "en": "Crystalline Calcite", "value": 85, "lo": 70, "hi": 100}]}, {"icon": "🟢", "color": "#4caf7d", "nameFr": "Faille de Malachite", "nameEn": "Malachite Rift", "themeFr": "Minéraux colorés", "themeEn": "Colored Minerals", "items": [{"fr": "Malachite Rugueuse", "en": "Rough Malachite", "value": 70, "lo": 55, "hi": 85}, {"fr": "Azurite Terne", "en": "Dull Azurite", "value": 80, "lo": 65, "hi": 100}, {"fr": "Agate Brute", "en": "Raw Agate", "value": 90, "lo": 75, "hi": 110}, {"fr": "Onyx Fendu", "en": "Split Onyx", "value": 100, "lo": 80, "hi": 120}, {"fr": "Jade Mat", "en": "Matte Jade", "value": 110, "lo": 90, "hi": 130}, {"fr": "Hématite Brillante", "en": "Shiny Hematite", "value": 130, "lo": 110, "hi": 160}]}, {"icon": "💠", "color": "#3ecfc0", "nameFr": "Chambre Ternie", "nameEn": "Dulled Chamber", "themeFr": "Gemmes communes", "themeEn": "Common Gems", "items": [{"fr": "Topaze Brute", "en": "Raw Topaz", "value": 110, "lo": 90, "hi": 130}, {"fr": "Lapis Lazuli Brut", "en": "Raw Lapis Lazuli", "value": 120, "lo": 100, "hi": 150}, {"fr": "Grenat Terne", "en": "Dull Garnet", "value": 140, "lo": 110, "hi": 170}, {"fr": "Péridot Brut", "en": "Raw Peridot", "value": 160, "lo": 130, "hi": 200}, {"fr": "Tourmaline Sombre", "en": "Dark Tourmaline", "value": 180, "lo": 150, "hi": 220}, {"fr": "Spinelle Mat", "en": "Matte Spinel", "value": 210, "lo": 170, "hi": 260}]}, {"icon": "💎", "color": "#f0c419", "nameFr": "Crevasse Dorée", "nameEn": "Golden Crevasse", "themeFr": "Gemmes raffinées", "themeEn": "Refined Gems", "items": [{"fr": "Topaze Claire", "en": "Clear Topaz", "value": 170, "lo": 140, "hi": 210}, {"fr": "Grenat Pur", "en": "Pure Garnet", "value": 190, "lo": 160, "hi": 230}, {"fr": "Péridot Lumineux", "en": "Radiant Peridot", "value": 210, "lo": 170, "hi": 260}, {"fr": "Tourmaline Pure", "en": "Pure Tourmaline", "value": 240, "lo": 200, "hi": 290}, {"fr": "Spinelle Brillant", "en": "Brilliant Spinel", "value": 280, "lo": 230, "hi": 340}, {"fr": "Citrine Dorée", "en": "Golden Citrine", "value": 320, "lo": 260, "hi": 390}]}, {"icon": "✨", "color": "#8fd9ff", "nameFr": "Antre d'Aigue-Marine", "nameEn": "Aquamarine Den", "themeFr": "Gemmes rares", "themeEn": "Rare Gems", "items": [{"fr": "Aigue-Marine", "en": "Aquamarine", "value": 270, "lo": 220, "hi": 330}, {"fr": "Morganite", "en": "Morganite", "value": 300, "lo": 250, "hi": 370}, {"fr": "Tanzanite", "en": "Tanzanite", "value": 330, "lo": 270, "hi": 400}, {"fr": "Alexandrite", "en": "Alexandrite", "value": 370, "lo": 300, "hi": 450}, {"fr": "Zircon Lumineux", "en": "Radiant Zircon", "value": 430, "lo": 350, "hi": 520}, {"fr": "Opale Claire", "en": "Clear Opal", "value": 490, "lo": 400, "hi": 600}]}, {"icon": "💍", "color": "#2f6fed", "nameFr": "Sanctuaire des Nobles", "nameEn": "Noble Sanctuary", "themeFr": "Gemmes nobles", "themeEn": "Noble Gems", "items": [{"fr": "Saphir Brut", "en": "Raw Sapphire", "value": 410, "lo": 340, "hi": 500}, {"fr": "Rubis Brut", "en": "Raw Ruby", "value": 460, "lo": 380, "hi": 560}, {"fr": "Émeraude Brute", "en": "Raw Emerald", "value": 520, "lo": 430, "hi": 630}, {"fr": "Saphir Poli", "en": "Polished Sapphire", "value": 580, "lo": 480, "hi": 710}, {"fr": "Rubis Poli", "en": "Polished Ruby", "value": 660, "lo": 540, "hi": 810}, {"fr": "Émeraude Polie", "en": "Polished Emerald", "value": 760, "lo": 620, "hi": 930}]}, {"icon": "👑", "color": "#dfe8ff", "nameFr": "Trésor de Diamant", "nameEn": "Diamond Vault", "themeFr": "Gemmes majeures", "themeEn": "Major Gems", "items": [{"fr": "Saphir Pur", "en": "Pure Sapphire", "value": 640, "lo": 520, "hi": 780}, {"fr": "Rubis Pur", "en": "Pure Ruby", "value": 720, "lo": 590, "hi": 880}, {"fr": "Émeraude Pure", "en": "Pure Emerald", "value": 800, "lo": 660, "hi": 980}, {"fr": "Diamant Brut", "en": "Raw Diamond", "value": 900, "lo": 740, "hi": 1100}, {"fr": "Diamant Taillé", "en": "Cut Diamond", "value": 1000, "lo": 820, "hi": 1200}, {"fr": "Diamant Parfait", "en": "Perfect Diamond", "value": 1200, "lo": 980, "hi": 1450}]}, {"icon": "🌑", "color": "#5b3d8f", "nameFr": "Abysse Obscur", "nameEn": "Dark Abyss", "themeFr": "Profondeurs obscures", "themeEn": "Dark Depths", "items": [{"fr": "Obsidienne Noire", "en": "Black Obsidian", "value": 990, "lo": 810, "hi": 1200}, {"fr": "Cristal Obscur", "en": "Obscure Crystal", "value": 1100, "lo": 900, "hi": 1350}, {"fr": "Pierre Nocturne", "en": "Night Stone", "value": 1250, "lo": 1000, "hi": 1500}, {"fr": "Gemme Sombre", "en": "Dark Gem", "value": 1400, "lo": 1150, "hi": 1700}, {"fr": "Cristal Dense", "en": "Dense Crystal", "value": 1600, "lo": 1300, "hi": 1950}, {"fr": "Roche Abyssale", "en": "Abyssal Rock", "value": 1850, "lo": 1500, "hi": 2250}]}, {"icon": "🔥", "color": "#ff5a36", "nameFr": "Fournaise Souterraine", "nameEn": "Underground Furnace", "themeFr": "Grottes volcaniques", "themeEn": "Volcanic Caves", "items": [{"fr": "Pierre de Lave", "en": "Lava Stone", "value": 1550, "lo": 1250, "hi": 1900}, {"fr": "Basalte Volcanique", "en": "Volcanic Basalt", "value": 1700, "lo": 1400, "hi": 2050}, {"fr": "Obsidienne Rouge", "en": "Red Obsidian", "value": 1900, "lo": 1550, "hi": 2300}, {"fr": "Cristal Magmatique", "en": "Magmatic Crystal", "value": 2150, "lo": 1750, "hi": 2600}, {"fr": "Gemme Incandescente", "en": "Incandescent Gem", "value": 2450, "lo": 2000, "hi": 3000}, {"fr": "Cœur de Lave", "en": "Heart of Lava", "value": 2850, "lo": 2350, "hi": 3500}]}, {"icon": "❄️", "color": "#7fe8ff", "nameFr": "Caverne Glaciaire", "nameEn": "Glacial Cavern", "themeFr": "Grottes gelées", "themeEn": "Frozen Caves", "items": [{"fr": "Glace Minérale", "en": "Mineral Ice", "value": 2400, "lo": 1950, "hi": 2950}, {"fr": "Cristal de Givre", "en": "Frost Crystal", "value": 2650, "lo": 2150, "hi": 3250}, {"fr": "Quartz Gelé", "en": "Frozen Quartz", "value": 3000, "lo": 2450, "hi": 3650}, {"fr": "Gemme Polaire", "en": "Polar Gem", "value": 3350, "lo": 2750, "hi": 4100}, {"fr": "Cristal Boréal", "en": "Boreal Crystal", "value": 3800, "lo": 3100, "hi": 4650}, {"fr": "Noyau Gelé", "en": "Frozen Core", "value": 4400, "lo": 3600, "hi": 5350}]}, {"icon": "⚡", "color": "#b13bff", "nameFr": "Noyau Électrique", "nameEn": "Electric Core", "themeFr": "Cristaux énergétiques", "themeEn": "Energetic Crystals", "items": [{"fr": "Cristal Chargé", "en": "Charged Crystal", "value": 3700, "lo": 3050, "hi": 4500}, {"fr": "Cristal Vibrant", "en": "Vibrant Crystal", "value": 4150, "lo": 3400, "hi": 5050}, {"fr": "Cristal Lumineux", "en": "Luminous Crystal", "value": 4600, "lo": 3750, "hi": 5600}, {"fr": "Cristal Électrique", "en": "Electric Crystal", "value": 5150, "lo": 4200, "hi": 6300}, {"fr": "Noyau Énergétique", "en": "Energy Core", "value": 5900, "lo": 4850, "hi": 7200}, {"fr": "Essence Cristallisée", "en": "Crystallized Essence", "value": 6850, "lo": 5600, "hi": 8350}]}, {"icon": "🌌", "color": "#5b3bff", "nameFr": "Constellation Enfouie", "nameEn": "Buried Constellation", "themeFr": "Cristaux cosmiques", "themeEn": "Cosmic Crystals", "items": [{"fr": "Cristal Stellaire", "en": "Stellar Crystal", "value": 5750, "lo": 4700, "hi": 7000}, {"fr": "Pierre Astrale", "en": "Astral Stone", "value": 6400, "lo": 5250, "hi": 7800}, {"fr": "Gemme Cosmique", "en": "Cosmic Gem", "value": 7150, "lo": 5850, "hi": 8700}, {"fr": "Cristal Céleste", "en": "Celestial Crystal", "value": 8000, "lo": 6550, "hi": 9750}, {"fr": "Fragment Cosmique", "en": "Cosmic Fragment", "value": 9150, "lo": 7500, "hi": 11000}, {"fr": "Cœur Stellaire", "en": "Stellar Heart", "value": 10500, "lo": 8600, "hi": 13000}]}, {"icon": "🌀", "color": "#ff3bd0", "nameFr": "Faille Fractale", "nameEn": "Fractal Rift", "themeFr": "Réalité instable", "themeEn": "Unstable Reality", "items": [{"fr": "Cristal Distordu", "en": "Distorted Crystal", "value": 8900, "lo": 7300, "hi": 11000}, {"fr": "Gemme Fractale", "en": "Fractal Gem", "value": 9950, "lo": 8150, "hi": 12000}, {"fr": "Pierre Paradoxale", "en": "Paradox Stone", "value": 11000, "lo": 9000, "hi": 13500}, {"fr": "Cristal Anormal", "en": "Anomalous Crystal", "value": 12500, "lo": 10000, "hi": 15000}, {"fr": "Noyau Rift", "en": "Rift Core", "value": 14000, "lo": 11500, "hi": 17000}, {"fr": "Essence Altérée", "en": "Altered Essence", "value": 16500, "lo": 13500, "hi": 20000}]}, {"icon": "⏳", "color": "#6c2bd9", "nameFr": "Brèche Temporelle", "nameEn": "Temporal Breach", "themeFr": "Temps & espace", "themeEn": "Time & Space", "items": [{"fr": "Cristal Temporel", "en": "Temporal Crystal", "value": 14000, "lo": 11500, "hi": 17000}, {"fr": "Pierre Chronique", "en": "Chronal Stone", "value": 15500, "lo": 12500, "hi": 19000}, {"fr": "Gemme du Vide", "en": "Gem of the Void", "value": 17000, "lo": 14000, "hi": 20500}, {"fr": "Cristal de Singularité", "en": "Singularity Crystal", "value": 19500, "lo": 16000, "hi": 24000}, {"fr": "Noyau Spatio-Temporel", "en": "Spacetime Core", "value": 22000, "lo": 18000, "hi": 27000}, {"fr": "Essence du Temps", "en": "Essence of Time", "value": 25500, "lo": 21000, "hi": 31000}]}, {"icon": "👼", "color": "#ffe9a8", "nameFr": "Sanctuaire Céleste", "nameEn": "Celestial Sanctuary", "themeFr": "Cristaux sacrés", "themeEn": "Sacred Crystals", "items": [{"fr": "Cristal Sacré", "en": "Sacred Crystal", "value": 21500, "lo": 17500, "hi": 26000}, {"fr": "Gemme Divine", "en": "Divine Gem", "value": 24000, "lo": 19500, "hi": 29500}, {"fr": "Pierre Bénie", "en": "Blessed Stone", "value": 26500, "lo": 21500, "hi": 32500}, {"fr": "Cristal Célestial", "en": "Heavenly Crystal", "value": 30000, "lo": 24500, "hi": 36500}, {"fr": "Essence Pure", "en": "Pure Essence", "value": 34000, "lo": 28000, "hi": 41500}, {"fr": "Cœur Sacré", "en": "Sacred Heart", "value": 39500, "lo": 32500, "hi": 48000}]}, {"icon": "🌈", "color": "#ffd166", "nameFr": "Genèse", "nameEn": "Genesis", "themeFr": "Origine du monde", "themeEn": "Origin of the World", "items": [{"fr": "Cristal Originel", "en": "Primal Crystal", "value": 33000, "lo": 27000, "hi": 40500}, {"fr": "Pierre Primordiale", "en": "Primordial Stone", "value": 37000, "lo": 30500, "hi": 45000}, {"fr": "Gemme Absolue", "en": "Absolute Gem", "value": 41500, "lo": 34000, "hi": 50500}, {"fr": "Cristal Universel", "en": "Universal Crystal", "value": 46500, "lo": 38000, "hi": 56500}, {"fr": "Noyau de Création", "en": "Core of Creation", "value": 53000, "lo": 43500, "hi": 64500}, {"fr": "Essence du Monde", "en": "Essence of the World", "value": 61000, "lo": 50000, "hi": 74500}]}, {"icon": "🏁", "color": "#d9c4ff", "nameFr": "Seuil de l'Infini", "nameEn": "Threshold of Infinity", "themeFr": "Ultime (avant Infinitium)", "themeEn": "Ultimate (before Infinitium)", "items": [{"fr": "Cristal Ultima", "en": "Ultima Crystal", "value": 51500, "lo": 42000, "hi": 63000}, {"fr": "Pierre Parfaite", "en": "Perfect Stone", "value": 57500, "lo": 47000, "hi": 70000}, {"fr": "Gemme Transcendante", "en": "Transcendent Gem", "value": 64000, "lo": 52500, "hi": 78000}, {"fr": "Cristal Éternel", "en": "Eternal Crystal", "value": 72000, "lo": 59000, "hi": 88000}, {"fr": "Noyau Absolu", "en": "Absolute Core", "value": 82000, "lo": 67000, "hi": 100000}, {"fr": "Essence Suprême", "en": "Supreme Essence", "value": 95000, "lo": 78000, "hi": 115000}]}];
+const EQUIPMENT = [{"tier": 1, "color": "#8a7660", "pickFr": "Pioche en Bois", "pickEn": "Wooden Pickaxe", "pickPrice": 60, "power": 1.0, "bagFr": "Sac en Bois", "bagEn": "Wooden Bag", "bagPrice": 40, "capacity": 50}, {"tier": 2, "color": "#6b7280", "pickFr": "Pioche en Silex", "pickEn": "Flint Pickaxe", "pickPrice": 95, "power": 1.9, "bagFr": "Sac en Silex", "bagEn": "Flint Bag", "bagPrice": 65, "capacity": 85}, {"tier": 3, "color": "#9a9a9a", "pickFr": "Pioche en Granit", "pickEn": "Granite Pickaxe", "pickPrice": 150, "power": 2.7, "bagFr": "Sac en Granit", "bagEn": "Granite Bag", "bagPrice": 100, "capacity": 120}, {"tier": 4, "color": "#8fa8c9", "pickFr": "Pioche en Quartz", "pickEn": "Quartz Pickaxe", "pickPrice": 250, "power": 3.5, "bagFr": "Sac en Quartz", "bagEn": "Quartz Bag", "bagPrice": 160, "capacity": 155}, {"tier": 5, "color": "#5fa8e0", "pickFr": "Pioche de Calcite", "pickEn": "Calcite Pickaxe", "pickPrice": 390, "power": 4.4, "bagFr": "Sac de Calcite", "bagEn": "Calcite Bag", "bagPrice": 260, "capacity": 190}, {"tier": 6, "color": "#4caf7d", "pickFr": "Pioche de Malachite", "pickEn": "Malachite Pickaxe", "pickPrice": 630, "power": 5.2, "bagFr": "Sac de Malachite", "bagEn": "Malachite Bag", "bagPrice": 420, "capacity": 225}, {"tier": 7, "color": "#3ecfc0", "pickFr": "Pioche Ternie", "pickEn": "Dulled Pickaxe", "pickPrice": 1000, "power": 6.1, "bagFr": "Sac Ternie", "bagEn": "Dulled Bag", "bagPrice": 670, "capacity": 260}, {"tier": 8, "color": "#f0c419", "pickFr": "Pioche Dorée", "pickEn": "Golden Pickaxe", "pickPrice": 1600, "power": 7.0, "bagFr": "Sac Dorée", "bagEn": "Golden Bag", "bagPrice": 1050, "capacity": 295}, {"tier": 9, "color": "#8fd9ff", "pickFr": "Pioche d'Aigue-Marine", "pickEn": "Aquamarine Pickaxe", "pickPrice": 2600, "power": 7.8, "bagFr": "Sac d'Aigue-Marine", "bagEn": "Aquamarine Bag", "bagPrice": 1700, "capacity": 330}, {"tier": 10, "color": "#2f6fed", "pickFr": "Pioche Noble", "pickEn": "Noble Pickaxe", "pickPrice": 4100, "power": 8.6, "bagFr": "Sac Noble", "bagEn": "Noble Bag", "bagPrice": 2750, "capacity": 365}, {"tier": 11, "color": "#dfe8ff", "pickFr": "Pioche de Diamant", "pickEn": "Diamond Pickaxe", "pickPrice": 6600, "power": 9.5, "bagFr": "Sac de Diamant", "bagEn": "Diamond Bag", "bagPrice": 4400, "capacity": 400}, {"tier": 12, "color": "#5b3d8f", "pickFr": "Pioche Abyssale", "pickEn": "Abyssal Pickaxe", "pickPrice": 10500, "power": 10.3, "bagFr": "Sac Abyssale", "bagEn": "Abyssal Bag", "bagPrice": 7050, "capacity": 435}, {"tier": 13, "color": "#ff5a36", "pickFr": "Pioche Volcanique", "pickEn": "Volcanic Pickaxe", "pickPrice": 17000, "power": 11.2, "bagFr": "Sac Volcanique", "bagEn": "Volcanic Bag", "bagPrice": 11500, "capacity": 470}, {"tier": 14, "color": "#7fe8ff", "pickFr": "Pioche Glaciaire", "pickEn": "Glacial Pickaxe", "pickPrice": 27000, "power": 12.0, "bagFr": "Sac Glaciaire", "bagEn": "Glacial Bag", "bagPrice": 18000, "capacity": 505}, {"tier": 15, "color": "#b13bff", "pickFr": "Pioche Électrique", "pickEn": "Electric Pickaxe", "pickPrice": 43000, "power": 12.9, "bagFr": "Sac Électrique", "bagEn": "Electric Bag", "bagPrice": 29000, "capacity": 540}, {"tier": 16, "color": "#5b3bff", "pickFr": "Pioche Stellaire", "pickEn": "Stellar Pickaxe", "pickPrice": 69000, "power": 13.8, "bagFr": "Sac Stellaire", "bagEn": "Stellar Bag", "bagPrice": 46000, "capacity": 575}, {"tier": 17, "color": "#ff3bd0", "pickFr": "Pioche Fractale", "pickEn": "Fractal Pickaxe", "pickPrice": 110000, "power": 14.6, "bagFr": "Sac Fractale", "bagEn": "Fractal Bag", "bagPrice": 74000, "capacity": 610}, {"tier": 18, "color": "#6c2bd9", "pickFr": "Pioche Temporelle", "pickEn": "Temporal Pickaxe", "pickPrice": 175000, "power": 15.4, "bagFr": "Sac Temporelle", "bagEn": "Temporal Bag", "bagPrice": 120000, "capacity": 645}, {"tier": 19, "color": "#ffe9a8", "pickFr": "Pioche Céleste", "pickEn": "Celestial Pickaxe", "pickPrice": 285000, "power": 16.3, "bagFr": "Sac Céleste", "bagEn": "Celestial Bag", "bagPrice": 190000, "capacity": 680}, {"tier": 20, "color": "#ffd166", "pickFr": "Pioche Primordiale", "pickEn": "Primordial Pickaxe", "pickPrice": 455000, "power": 17.1, "bagFr": "Sac Primordiale", "bagEn": "Primordial Bag", "bagPrice": 300000, "capacity": 715}, {"tier": 21, "color": "#d9c4ff", "pickFr": "Pioche de l'Infini", "pickEn": "Infinity Pickaxe", "pickPrice": 725000, "power": 18.0, "bagFr": "Sac de l'Infini", "bagEn": "Infinity Bag", "bagPrice": 485000, "capacity": 750}];
+
+/* !!! Replace this with your real Roblox game link !!! */
+const ROBLOX_LINK = "https://www.roblox.com/games/";
 
 /* ============ TRANSLATIONS ============ */
 const I18N = {
   fr: {
-    "nav.about":"À propos",
+    "nav.home":"Accueil",
     "nav.zones":"Zones",
+    "nav.equipment":"Équipements",
     "hero.eyebrow":"Un jeu Roblox de minage",
     "hero.title":'Creuse toujours plus <span class="accent">profond</span>',
     "hero.desc":"De cailloux ordinaires aux cristaux venus d'une autre réalité : Cavernium te fait descendre à travers 21 zones minières, jusqu'à la ressource ultime, l'Infinitium.",
@@ -481,18 +518,30 @@ const I18N = {
     "about.card2":"minerais et cristaux différents à extraire et collectionner.",
     "about.card3":"l'Infinitium, la ressource finale — d'une rareté presque mythique.",
     "zones.title":"Les 21 zones",
-    "zones.desc":"Chaque zone contient 6 minerais. Clique sur une zone pour voir ce qu'on peut y trouver.",
+    "zones.desc":"Chaque zone a son propre nom et contient 6 minerais. Clique sur une zone pour l'ouvrir, puis sur un minerai pour voir sa valeur et sa fourchette de prix.",
+    "zones.notice":"⚠️ Les valeurs et prix affichés sont <strong>provisoires</strong> — ils servent de base d'équilibrage en attendant les vrais chiffres du jeu.",
     "zones.expand_all":"Tout déplier",
     "zones.collapse_all":"Tout replier",
+    "zones.value_label":"Valeur",
+    "zones.price_label":"Prix",
     "infinitium.title":"Infinitium",
     "infinitium.desc":"La ressource finale du jeu. Elle pousse extrêmement rarement — atteindre l'Infinitium marque la fin absolue de la progression de Cavernium.",
+    "equip.title":"Équipements",
+    "equip.desc":"À chaque zone débloquée correspond une pioche et un sac plus performants. La pioche augmente ta puissance de minage, le sac augmente ta capacité de stockage.",
+    "equip.notice":"⚠️ Brouillon de progression généré automatiquement à partir des 21 zones — prix et statistiques provisoires, à ajuster selon l'équilibrage réel du jeu.",
+    "equip.col_tier":"Palier",
+    "equip.col_pickaxe":"Pioche",
+    "equip.col_bag":"Sac",
+    "equip.power":"Puissance",
+    "equip.capacity":"Capacité",
     "footer.note":"Cavernium est un jeu créé sur Roblox. Ce site est un fan-hub non officiel hébergé sur GitHub Pages.",
     "footer.playlink":"jouer sur Roblox",
     "footer.madewith":"fait avec ⛏️ et beaucoup de cristaux"
   },
   en: {
-    "nav.about":"About",
+    "nav.home":"Home",
     "nav.zones":"Zones",
+    "nav.equipment":"Equipment",
     "hero.eyebrow":"A Roblox mining game",
     "hero.title":'Dig ever <span class="accent">deeper</span>',
     "hero.desc":"From ordinary pebbles to crystals from another reality: Cavernium takes you down through 21 mining zones, all the way to the ultimate resource — Infinitium.",
@@ -504,21 +553,34 @@ const I18N = {
     "about.card2":"different ores and crystals to mine and collect.",
     "about.card3":"Infinitium, the final resource — almost mythically rare.",
     "zones.title":"The 21 zones",
-    "zones.desc":"Each zone holds 6 ores. Click a zone to see what you can find there.",
+    "zones.desc":"Each zone has its own name and holds 6 ores. Click a zone to open it, then click an ore to see its value and price range.",
+    "zones.notice":"⚠️ The values and prices shown are <strong>provisional</strong> — they're a balancing baseline until the game's real numbers are in.",
     "zones.expand_all":"Expand all",
     "zones.collapse_all":"Collapse all",
+    "zones.value_label":"Value",
+    "zones.price_label":"Price",
     "infinitium.title":"Infinitium",
     "infinitium.desc":"The game's final resource. It grows extremely rarely — reaching Infinitium marks the absolute end of Cavernium's progression.",
+    "equip.title":"Equipment",
+    "equip.desc":"Each unlocked zone comes with a stronger pickaxe and bag. The pickaxe increases your mining power, the bag increases your storage capacity.",
+    "equip.notice":"⚠️ Draft progression auto-generated from the 21 zones — prices and stats are provisional and should be adjusted to match the game's real balancing.",
+    "equip.col_tier":"Tier",
+    "equip.col_pickaxe":"Pickaxe",
+    "equip.col_bag":"Bag",
+    "equip.power":"Power",
+    "equip.capacity":"Capacity",
     "footer.note":"Cavernium is a game built on Roblox. This site is an unofficial fan hub hosted on GitHub Pages.",
     "footer.playlink":"play on Roblox",
     "footer.madewith":"made with ⛏️ and a lot of crystals"
   }
 };
 
-/* !!! Replace this with your real Roblox game link !!! */
-const ROBLOX_LINK = "https://www.roblox.com/games/";
-
 let currentLang = "fr";
+let currentPage = "home";
+
+function fmtNum(n){
+  return n.toLocaleString(currentLang === "fr" ? "fr-FR" : "en-US");
+}
 
 function renderZones(lang){
   const container = document.getElementById("path-container");
@@ -527,16 +589,33 @@ function renderZones(lang){
     const el = document.createElement("div");
     el.className = "zone";
     el.style.setProperty("--zone-color", zone.color);
-    const itemsHtml = zone.items.map(pair => `<li>${lang === "fr" ? pair[0] : pair[1]}</li>`).join("");
+    const itemsHtml = zone.items.map((item, idx) => {
+      const name = lang === "fr" ? item.fr : item.en;
+      return `
+        <div class="mineral" data-zone="${i}" data-item="${idx}">
+          <button class="mineral-btn" type="button" aria-expanded="false">${name}</button>
+          <div class="mineral-detail">
+            <div class="mineral-detail-inner">
+              <div class="row"><span>${I18N[lang]["zones.value_label"]}</span><span>${fmtNum(item.value)}</span></div>
+              <div class="row"><span>${I18N[lang]["zones.price_label"]}</span><span>${fmtNum(item.lo)} – ${fmtNum(item.hi)}</span></div>
+            </div>
+          </div>
+        </div>`;
+    }).join("");
+    const zoneName = lang === "fr" ? zone.nameFr : zone.nameEn;
+    const zoneTheme = lang === "fr" ? zone.themeFr : zone.themeEn;
     el.innerHTML = `
       <button class="zone-head" type="button" aria-expanded="false">
         <span class="zone-num">${String(i+1).padStart(2,"0")}</span>
         <span class="zone-icon">${zone.icon}</span>
-        <span class="zone-name">${lang === "fr" ? zone.fr : zone.en}</span>
+        <span class="zone-titles">
+          <span class="zone-name">${zoneName}</span>
+          <span class="zone-theme">${zoneTheme}</span>
+        </span>
         <span class="zone-chevron">⌄</span>
       </button>
       <div class="zone-body">
-        <ul class="zone-items">${itemsHtml}</ul>
+        <div class="zone-items">${itemsHtml}</div>
       </div>
     `;
     const head = el.querySelector(".zone-head");
@@ -544,6 +623,14 @@ function renderZones(lang){
       const willOpen = !el.classList.contains("open");
       el.classList.toggle("open");
       head.setAttribute("aria-expanded", String(willOpen));
+    });
+    el.querySelectorAll(".mineral").forEach(mEl => {
+      const btn = mEl.querySelector(".mineral-btn");
+      btn.addEventListener("click", () => {
+        const willOpen = !mEl.classList.contains("open");
+        mEl.classList.toggle("open");
+        btn.setAttribute("aria-expanded", String(willOpen));
+      });
     });
     container.appendChild(el);
   });
@@ -555,6 +642,32 @@ function renderZones(lang){
     <p>${I18N[lang]["infinitium.desc"]}</p>
   `;
   container.appendChild(infi);
+}
+
+function renderEquipment(lang){
+  const container = document.getElementById("equip-container");
+  container.innerHTML = "";
+  EQUIPMENT.forEach(tier => {
+    const row = document.createElement("div");
+    row.className = "equip-row";
+    row.style.setProperty("--tier-color", tier.color);
+    const pickName = lang === "fr" ? tier.pickFr : tier.pickEn;
+    const bagName = lang === "fr" ? tier.bagFr : tier.bagEn;
+    row.innerHTML = `
+      <span class="equip-tier">${String(tier.tier).padStart(2,"0")}</span>
+      <div class="equip-item">
+        <span class="name">⛏️ ${pickName}</span>
+        <span class="stat">${I18N[lang]["equip.power"]} x${tier.power}</span>
+        <span class="price">${fmtNum(tier.pickPrice)}</span>
+      </div>
+      <div class="equip-item">
+        <span class="name">🎒 ${bagName}</span>
+        <span class="stat">${I18N[lang]["equip.capacity"]} ${tier.capacity}</span>
+        <span class="price">${fmtNum(tier.bagPrice)}</span>
+      </div>
+    `;
+    container.appendChild(row);
+  });
 }
 
 function applyI18n(lang){
@@ -570,6 +683,18 @@ function applyI18n(lang){
   document.getElementById("play-link").href = ROBLOX_LINK;
   document.getElementById("footer-play").href = ROBLOX_LINK;
   renderZones(lang);
+  renderEquipment(lang);
+}
+
+function goToPage(page){
+  currentPage = page;
+  ["home","zones","equipment"].forEach(p => {
+    document.getElementById("page-" + p).classList.toggle("hidden", p !== page);
+  });
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.page === page);
+  });
+  window.scrollTo({top:0, behavior:"instant"});
 }
 
 document.querySelectorAll(".gate-btn").forEach(btn => {
@@ -578,11 +703,16 @@ document.querySelectorAll(".gate-btn").forEach(btn => {
     document.getElementById("lang-gate").classList.add("hidden");
     document.getElementById("site").classList.remove("hidden");
     applyI18n(lang);
+    goToPage("home");
   });
 });
 
 document.getElementById("lang-toggle").addEventListener("click", () => {
   applyI18n(currentLang === "fr" ? "en" : "fr");
+});
+
+document.querySelectorAll("[data-page]").forEach(el => {
+  el.addEventListener("click", () => goToPage(el.dataset.page));
 });
 
 document.getElementById("toggle-all").addEventListener("click", function(){
