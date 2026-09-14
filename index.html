@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="fr" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cavernium</title>
+<meta name="description" content="Cavernium — jeu Roblox de minage. Explore 21 zones, des cailloux bruts jusqu'à l'Infinitium.">
+<link rel="icon" type="image/png" href="assets/cavernium-favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050308;
+    --bg-panel:#0b0714;
+    --bg-panel-2:#100a1c;
+    --line:rgba(180,150,255,0.14);
+    --purple:#9b4bff;
+    --purple-deep:#4a1f8f;
+    --blue:#4fb3ff;
+    --gold:#ffb347;
+    --white-glow:#f3ecff;
+    --text:#e9e3f7;
+    --text-dim:#9c8fc0;
+    --radius:2px;
+    --serif: "Cinzel", serif;
+    --sans: "Manrope", -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+  a{color:inherit;}
+  .hidden{display:none !important;}
+  img{max-width:100%; display:block;}
+
+  /* ---------- Starfield background ---------- */
+  .stars{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1.5px 1.5px at 40% 80%, rgba(200,170,255,0.5), transparent),
+      radial-gradient(1px 1px at 85% 15%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1.5px 1.5px at 55% 45%, rgba(150,200,255,0.4), transparent),
+      radial-gradient(1px 1px at 10% 65%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1px 1px at 92% 80%, rgba(255,200,150,0.35), transparent);
+    background-size: 100% 100%;
+    opacity:0.8;
+  }
+
+  /* ---------- Language gate ---------- */
+  #lang-gate{
+    position:fixed; inset:0; z-index:100;
+    display:flex; align-items:center; justify-content:center;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(107,47,179,0.35), transparent 60%),
+      #030106;
+    text-align:center;
+    padding:24px;
+  }
+  .gate-inner{
+    display:flex; flex-direction:column; align-items:center; gap:28px;
+    max-width:420px;
+  }
+  .gate-logo{
+    width:150px; height:150px; border-radius:50%;
+    box-shadow: 0 0 60px rgba(155,75,255,0.45), 0 0 120px rgba(79,179,255,0.2);
+  }
+  .gate-title{
+    font-family:var(--serif); font-weight:800; font-size:2.1rem;
+    letter-spacing:0.06em;
+    background: linear-gradient(90deg, var(--gold), var(--purple) 45%, var(--blue));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin:0;
+  }
+  .gate-sub{color:var(--text-dim); font-size:0.95rem; margin:0;}
+  .gate-buttons{display:flex; gap:16px; flex-wrap:wrap; justify-content:center;}
+  .gate-btn{
+    font-family:var(--sans); font-weight:700; font-size:1rem;
+    padding:14px 30px; border-radius:var(--radius);
+    border:1px solid var(--line);
+    background:rgba(20,12,35,0.6);
+    color:var(--text);
+    cursor:pointer;
+    transition:border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    display:flex; align-items:center; gap:10px;
+  }
+  .gate-btn:hover, .gate-btn:focus-visible{
+    border-color:var(--purple);
+    box-shadow:0 0 24px rgba(155,75,255,0.35);
+    transform:translateY(-2px);
+    outline:none;
+  }
+  .gate-flag{font-size:1.3rem;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 5vw;
+    background:rgba(5,3,8,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex; align-items:center; gap:12px; text-decoration:none;}
+  .brand img{width:38px; height:38px; border-radius:50%;}
+  .brand span{font-family:var(--serif); font-weight:700; font-size:1.15rem; letter-spacing:0.04em; color:var(--white-glow);}
+  nav{display:flex; align-items:center; gap:28px;}
+  nav a{
+    text-decoration:none; color:var(--text-dim); font-size:0.92rem; font-weight:600;
+    transition:color 0.2s;
+  }
+  nav a:hover{color:var(--white-glow);}
+  #lang-toggle{
+    border:1px solid var(--line); background:transparent; color:var(--text-dim);
+    font-family:var(--sans); font-weight:700; font-size:0.85rem;
+    padding:6px 12px; border-radius:var(--radius); cursor:pointer;
+    transition:border-color 0.2s, color 0.2s;
+  }
+  #lang-toggle:hover{border-color:var(--blue); color:var(--white-glow);}
+  .nav-links{display:flex; gap:24px;}
+  @media (max-width:700px){
+    .nav-links{display:none;}
+  }
+
+  /* ---------- Hero ---------- */
+  #hero{
+    position:relative; z-index:1;
+    padding:100px 6vw 90px;
+    display:grid; grid-template-columns: 1.1fr 0.9fr; gap:50px;
+    align-items:center;
+    max-width:1200px; margin:0 auto;
+  }
+  @media (max-width:860px){
+    #hero{grid-template-columns:1fr; text-align:center; padding-top:60px;}
+    #hero .hero-visual{order:-1; margin:0 auto;}
+  }
+  .eyebrow-free{color:var(--blue); font-weight:700; font-size:0.85rem; letter-spacing:0.04em; margin:0 0 14px;}
+  h1.hero-title{
+    font-family:var(--serif); font-weight:800; font-size:clamp(2.6rem, 5.5vw, 4.4rem);
+    line-height:1.05; margin:0 0 22px; letter-spacing:0.01em;
+    color:var(--white-glow);
+  }
+  .hero-title .accent{
+    background:linear-gradient(90deg, var(--gold), var(--purple) 55%, var(--blue));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-desc{font-size:1.08rem; color:var(--text-dim); max-width:52ch; margin:0 0 32px;}
+  @media (max-width:860px){ .hero-desc{margin-left:auto; margin-right:auto;} }
+  .hero-ctas{display:flex; gap:16px; flex-wrap:wrap;}
+  @media (max-width:860px){ .hero-ctas{justify-content:center;} }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:13px 26px; border-radius:var(--radius); font-weight:700; font-size:0.95rem;
+    text-decoration:none; cursor:pointer; border:1px solid transparent;
+    transition:transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+  }
+  .btn-primary{
+    background:linear-gradient(90deg, #7a2fe0, #4fb3ff);
+    color:#050308;
+    box-shadow:0 0 30px rgba(122,47,224,0.35);
+  }
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 0 40px rgba(122,47,224,0.55);}
+  .btn-ghost{
+    border-color:var(--line); color:var(--text);
+  }
+  .btn-ghost:hover{border-color:var(--blue); color:var(--white-glow);}
+  .hero-visual{position:relative; display:flex; justify-content:center;}
+  .hero-visual img{
+    width:min(420px, 90%); border-radius:50%;
+    box-shadow:0 0 90px rgba(155,75,255,0.4), 0 0 160px rgba(79,179,255,0.2);
+  }
+
+  /* ---------- Section shells ---------- */
+  section{position:relative; z-index:1;}
+  .section-inner{max-width:1100px; margin:0 auto; padding:70px 6vw;}
+  .section-head{max-width:640px; margin-bottom:44px;}
+  .section-head h2{
+    font-family:var(--serif); font-weight:700; font-size:clamp(1.8rem, 3vw, 2.4rem);
+    color:var(--white-glow); margin:0 0 14px;
+  }
+  .section-head p{color:var(--text-dim); margin:0; font-size:1.02rem;}
+
+  /* ---------- About / stats ---------- */
+  #about{border-top:1px solid var(--line);}
+  .about-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:20px;}
+  @media (max-width:700px){ .about-grid{grid-template-columns:1fr;} }
+  .about-card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px;
+  }
+  .about-card .num{font-family:var(--serif); font-size:2rem; font-weight:700; color:var(--gold); display:block; margin-bottom:6px;}
+  .about-card p{margin:0; color:var(--text-dim); font-size:0.95rem;}
+
+  /* ---------- Zones path ---------- */
+  #zones{border-top:1px solid var(--line);}
+  .path{
+    position:relative;
+    padding-left:36px;
+  }
+  .path::before{
+    content:"";
+    position:absolute; left:11px; top:6px; bottom:6px; width:2px;
+    background:linear-gradient(180deg, #8a7660, #9b4bff 40%, #ffb347 70%, #ffe9a8);
+    opacity:0.5;
+  }
+  .zone{
+    position:relative;
+    margin-bottom:14px;
+    border:1px solid var(--line);
+    background:var(--bg-panel);
+    border-radius:var(--radius);
+  }
+  .zone::before{
+    content:"";
+    position:absolute; left:-36px; top:22px;
+    width:12px; height:12px; border-radius:50%;
+    background:var(--zone-color, var(--purple));
+    box-shadow:0 0 12px var(--zone-color, var(--purple));
+  }
+  .zone-head{
+    display:flex; align-items:center; gap:16px;
+    width:100%; text-align:left;
+    padding:18px 20px;
+    background:none; border:none; cursor:pointer;
+    color:var(--text); font-family:var(--sans);
+  }
+  .zone-num{
+    font-family:var(--serif); font-weight:700; font-size:0.85rem;
+    color:var(--zone-color, var(--purple));
+    min-width:34px;
+  }
+  .zone-icon{font-size:1.3rem;}
+  .zone-name{font-weight:700; font-size:1.05rem; color:var(--white-glow); flex:1;}
+  .zone-chevron{
+    color:var(--text-dim); font-size:1rem; transition:transform 0.2s;
+    flex-shrink:0;
+  }
+  .zone.open .zone-chevron{transform:rotate(180deg);}
+  .zone-body{
+    max-height:0; overflow:hidden; transition:max-height 0.25s ease;
+  }
+  .zone.open .zone-body{max-height:400px;}
+  .zone-items{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px 16px;
+    padding:0 20px 22px 20px;
+    border-top:1px solid var(--line);
+    padding-top:16px;
+  }
+  @media (max-width:600px){ .zone-items{grid-template-columns:1fr 1fr;} }
+  .zone-items li{
+    list-style:none; font-size:0.9rem; color:var(--text-dim);
+    padding-left:14px; position:relative;
+  }
+  .zone-items li::before{
+    content:"·"; position:absolute; left:0; color:var(--zone-color, var(--purple));
+    font-weight:800;
+  }
+  .path-controls{display:flex; justify-content:flex-end; margin-bottom:16px;}
+  .path-controls button{
+    background:none; border:1px solid var(--line); color:var(--text-dim);
+    padding:8px 16px; border-radius:var(--radius); font-family:var(--sans);
+    font-size:0.85rem; font-weight:600; cursor:pointer; transition:border-color 0.2s, color 0.2s;
+  }
+  .path-controls button:hover{border-color:var(--blue); color:var(--white-glow);}
+
+  /* Infinitium final card */
+  .infinitium{
+    position:relative;
+    margin-top:28px; margin-left:-36px;
+    padding:34px 28px;
+    text-align:center;
+    border:1px solid rgba(255,220,150,0.35);
+    border-radius:var(--radius);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,200,255,0.12), transparent 70%),
+      linear-gradient(135deg, rgba(122,47,224,0.15), rgba(79,179,255,0.12));
+  }
+  .infinitium h3{
+    font-family:var(--serif); font-size:1.5rem; margin:0 0 8px;
+    background:linear-gradient(90deg, var(--gold), #ff9de2, var(--blue));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .infinitium p{margin:0; color:var(--text-dim); max-width:50ch; margin:0 auto;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:36px 6vw 50px;
+    text-align:center;
+    color:var(--text-dim);
+    font-size:0.85rem;
+  }
+  footer a{text-decoration:underline; text-underline-offset:3px;}
+  footer a:hover{color:var(--white-glow);}
+</style>
+</head>
+<body>
+
+<div class="stars" aria-hidden="true"></div>
+
+<!-- Language gate -->
+<div id="lang-gate">
+  <div class="gate-inner">
+    <img class="gate-logo" src="assets/cavernium-logo.webp" alt="Cavernium">
+    <h1 class="gate-title">CAVERNIUM</h1>
+    <p class="gate-sub" data-i18n-fixed>Choisissez votre langue · Choose your language</p>
+    <div class="gate-buttons">
+      <button class="gate-btn" data-lang="fr"><span class="gate-flag">🇫🇷</span> Français</button>
+      <button class="gate-btn" data-lang="en"><span class="gate-flag">🇬🇧</span> English</button>
+    </div>
+  </div>
+</div>
+
+<div id="site" class="hidden">
+
+  <header>
+    <a class="brand" href="#hero">
+      <img src="assets/cavernium-logo.webp" alt="Cavernium logo">
+      <span>CAVERNIUM</span>
+    </a>
+    <nav>
+      <div class="nav-links">
+        <a href="#about" data-i18n="nav.about"></a>
+        <a href="#zones" data-i18n="nav.zones"></a>
+      </div>
+      <button id="lang-toggle" type="button"></button>
+    </nav>
+  </header>
+
+  <section id="hero">
+    <div class="hero-copy">
+      <p class="eyebrow-free" data-i18n="hero.eyebrow"></p>
+      <h1 class="hero-title" data-i18n="hero.title"></h1>
+      <p class="hero-desc" data-i18n="hero.desc"></p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#" id="play-link" data-i18n="hero.cta_play"></a>
+        <a class="btn btn-ghost" href="#zones" data-i18n="hero.cta_zones"></a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img src="assets/cavernium-logo.webp" alt="Cavernium">
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-inner">
+      <div class="section-head">
+        <h2 data-i18n="about.title"></h2>
+        <p data-i18n="about.desc"></p>
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <span class="num">21</span>
+          <p data-i18n="about.card1"></p>
+        </div>
+        <div class="about-card">
+          <span class="num">126+</span>
+          <p data-i18n="about.card2"></p>
+        </div>
+        <div class="about-card">
+          <span class="num">♾️</span>
+          <p data-i18n="about.card3"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="zones">
+    <div class="section-inner">
+      <div class="section-head">
+        <h2 data-i18n="zones.title"></h2>
+        <p data-i18n="zones.desc"></p>
+      </div>
+      <div class="path-controls">
+        <button id="toggle-all" data-i18n="zones.expand_all"></button>
+      </div>
+      <div class="path" id="path-container"></div>
+    </div>
+  </section>
+
+  <footer>
+    <p data-i18n="footer.note"></p>
+    <p>Cavernium — <a href="#" id="footer-play" data-i18n="footer.playlink"></a> · <span data-i18n="footer.madewith"></span></p>
+  </footer>
+
+</div>
+
+<script>
+/* ============ DATA ============ */
+const ZONES = [
+  {icon:"🟫", color:"#8a7660", fr:"Cailloux basiques", en:"Basic Rocks",
+    items:[["Caillou Brut","Raw Pebble"],["Pierre Fissurée","Cracked Stone"],["Pierre Sableuse","Sandy Stone"],
+           ["Pierre Terne","Dull Stone"],["Roche Poussiéreuse","Dusty Rock"],["Pierre Craquelée","Crackled Stone"]]},
+  {icon:"⚫", color:"#6b7280", fr:"Pierres communes", en:"Common Stones",
+    items:[["Silex Rugueux","Rough Flint"],["Grès Compact","Compact Sandstone"],["Calcaire Brut","Raw Limestone"],
+           ["Schiste Fragile","Fragile Shale"],["Ardoise Terne","Dull Slate"],["Pierre Sombre","Dark Stone"]]},
+  {icon:"🪨", color:"#9a9a9a", fr:"Roches solides", en:"Solid Rocks",
+    items:[["Granite Brut","Raw Granite"],["Diorite","Diorite"],["Andésite","Andesite"],
+           ["Gneiss","Gneiss"],["Marbre Terne","Dull Marble"],["Basalte Dense","Dense Basalt"]]},
+  {icon:"🌫️", color:"#8fa8c9", fr:"Minéraux simples", en:"Simple Minerals",
+    items:[["Quartz Brut","Raw Quartz"],["Quartz Laiteux","Milky Quartz"],["Quartz Trouble","Cloudy Quartz"],
+           ["Cristal Fendu","Split Crystal"],["Pierre Cristallisée","Crystallized Stone"],["Roche Minéralisée","Mineralized Rock"]]},
+  {icon:"🔵", color:"#5fa8e0", fr:"Premiers cristaux", en:"First Crystals",
+    items:[["Quartz Clair","Clear Quartz"],["Quartz Fumé","Smoky Quartz"],["Quartz Rose","Rose Quartz"],
+           ["Améthyste Terne","Dull Amethyst"],["Fluorite Pâle","Pale Fluorite"],["Calcite Cristalline","Crystalline Calcite"]]},
+  {icon:"🟢", color:"#4caf7d", fr:"Minéraux colorés", en:"Colored Minerals",
+    items:[["Malachite Rugueuse","Rough Malachite"],["Azurite Terne","Dull Azurite"],["Agate Brute","Raw Agate"],
+           ["Onyx Fendu","Split Onyx"],["Jade Mat","Matte Jade"],["Hématite Brillante","Shiny Hematite"]]},
+  {icon:"💠", color:"#3ecfc0", fr:"Gemmes communes", en:"Common Gems",
+    items:[["Topaze Brute","Raw Topaz"],["Lapis Lazuli Brut","Raw Lapis Lazuli"],["Grenat Terne","Dull Garnet"],
+           ["Péridot Brut","Raw Peridot"],["Tourmaline Sombre","Dark Tourmaline"],["Spinelle Mat","Matte Spinel"]]},
+  {icon:"💎", color:"#f0c419", fr:"Gemmes raffinées", en:"Refined Gems",
+    items:[["Topaze Claire","Clear Topaz"],["Grenat Pur","Pure Garnet"],["Péridot Lumineux","Radiant Peridot"],
+           ["Tourmaline Pure","Pure Tourmaline"],["Spinelle Brillant","Brilliant Spinel"],["Citrine Dorée","Golden Citrine"]]},
+  {icon:"✨", color:"#8fd9ff", fr:"Gemmes rares", en:"Rare Gems",
+    items:[["Aigue-Marine","Aquamarine"],["Morganite","Morganite"],["Tanzanite","Tanzanite"],
+           ["Alexandrite","Alexandrite"],["Zircon Lumineux","Radiant Zircon"],["Opale Claire","Clear Opal"]]},
+  {icon:"💍", color:"#2f6fed", fr:"Gemmes nobles", en:"Noble Gems",
+    items:[["Saphir Brut","Raw Sapphire"],["Rubis Brut","Raw Ruby"],["Émeraude Brute","Raw Emerald"],
+           ["Saphir Poli","Polished Sapphire"],["Rubis Poli","Polished Ruby"],["Émeraude Polie","Polished Emerald"]]},
+  {icon:"👑", color:"#dfe8ff", fr:"Gemmes majeures", en:"Major Gems",
+    items:[["Saphir Pur","Pure Sapphire"],["Rubis Pur","Pure Ruby"],["Émeraude Pure","Pure Emerald"],
+           ["Diamant Brut","Raw Diamond"],["Diamant Taillé","Cut Diamond"],["Diamant Parfait","Perfect Diamond"]]},
+  {icon:"🌑", color:"#5b3d8f", fr:"Profondeurs obscures", en:"Dark Depths",
+    items:[["Obsidienne Noire","Black Obsidian"],["Cristal Obscur","Obscure Crystal"],["Pierre Nocturne","Night Stone"],
+           ["Gemme Sombre","Dark Gem"],["Cristal Dense","Dense Crystal"],["Roche Abyssale","Abyssal Rock"]]},
+  {icon:"🔥", color:"#ff5a36", fr:"Grottes volcaniques", en:"Volcanic Caves",
+    items:[["Pierre de Lave","Lava Stone"],["Basalte Volcanique","Volcanic Basalt"],["Obsidienne Rouge","Red Obsidian"],
+           ["Cristal Magmatique","Magmatic Crystal"],["Gemme Incandescente","Incandescent Gem"],["Cœur de Lave","Heart of Lava"]]},
+  {icon:"❄️", color:"#7fe8ff", fr:"Grottes gelées", en:"Frozen Caves",
+    items:[["Glace Minérale","Mineral Ice"],["Cristal de Givre","Frost Crystal"],["Quartz Gelé","Frozen Quartz"],
+           ["Gemme Polaire","Polar Gem"],["Cristal Boréal","Boreal Crystal"],["Noyau Gelé","Frozen Core"]]},
+  {icon:"⚡", color:"#b13bff", fr:"Cristaux énergétiques", en:"Energetic Crystals",
+    items:[["Cristal Chargé","Charged Crystal"],["Cristal Vibrant","Vibrant Crystal"],["Cristal Lumineux","Luminous Crystal"],
+           ["Cristal Électrique","Electric Crystal"],["Noyau Énergétique","Energy Core"],["Essence Cristallisée","Crystallized Essence"]]},
+  {icon:"🌌", color:"#5b3bff", fr:"Cristaux cosmiques", en:"Cosmic Crystals",
+    items:[["Cristal Stellaire","Stellar Crystal"],["Pierre Astrale","Astral Stone"],["Gemme Cosmique","Cosmic Gem"],
+           ["Cristal Céleste","Celestial Crystal"],["Fragment Cosmique","Cosmic Fragment"],["Cœur Stellaire","Stellar Heart"]]},
+  {icon:"🌀", color:"#ff3bd0", fr:"Réalité instable", en:"Unstable Reality",
+    items:[["Cristal Distordu","Distorted Crystal"],["Gemme Fractale","Fractal Gem"],["Pierre Paradoxale","Paradox Stone"],
+           ["Cristal Anormal","Anomalous Crystal"],["Noyau Rift","Rift Core"],["Essence Altérée","Altered Essence"]]},
+  {icon:"⏳", color:"#6c2bd9", fr:"Temps & espace", en:"Time & Space",
+    items:[["Cristal Temporel","Temporal Crystal"],["Pierre Chronique","Chronal Stone"],["Gemme du Vide","Gem of the Void"],
+           ["Cristal de Singularité","Singularity Crystal"],["Noyau Spatio-Temporel","Spacetime Core"],["Essence du Temps","Essence of Time"]]},
+  {icon:"👼", color:"#ffe9a8", fr:"Cristaux sacrés", en:"Sacred Crystals",
+    items:[["Cristal Sacré","Sacred Crystal"],["Gemme Divine","Divine Gem"],["Pierre Bénie","Blessed Stone"],
+           ["Cristal Célestial","Heavenly Crystal"],["Essence Pure","Pure Essence"],["Cœur Sacré","Sacred Heart"]]},
+  {icon:"🌈", color:"#ffd166", fr:"Origine du monde", en:"Origin of the World",
+    items:[["Cristal Originel","Primal Crystal"],["Pierre Primordiale","Primordial Stone"],["Gemme Absolue","Absolute Gem"],
+           ["Cristal Universel","Universal Crystal"],["Noyau de Création","Core of Creation"],["Essence du Monde","Essence of the World"]]},
+  {icon:"🏁", color:"#d9c4ff", fr:"Ultime (avant Infinitium)", en:"Ultimate (before Infinitium)",
+    items:[["Cristal Ultima","Ultima Crystal"],["Pierre Parfaite","Perfect Stone"],["Gemme Transcendante","Transcendent Gem"],
+           ["Cristal Éternel","Eternal Crystal"],["Noyau Absolu","Absolute Core"],["Essence Suprême","Supreme Essence"]]}
+];
+
+/* ============ TRANSLATIONS ============ */
+const I18N = {
+  fr: {
+    "nav.about":"À propos",
+    "nav.zones":"Zones",
+    "hero.eyebrow":"Un jeu Roblox de minage",
+    "hero.title":'Creuse toujours plus <span class="accent">profond</span>',
+    "hero.desc":"De cailloux ordinaires aux cristaux venus d'une autre réalité : Cavernium te fait descendre à travers 21 zones minières, jusqu'à la ressource ultime, l'Infinitium.",
+    "hero.cta_play":"Jouer sur Roblox",
+    "hero.cta_zones":"Voir les zones",
+    "about.title":"Un seul but : creuser",
+    "about.desc":"Cavernium repose sur une progression simple mais longue : chaque zone révèle des minerais plus rares que la précédente, jusqu'à atteindre les profondeurs les plus reculées du monde.",
+    "about.card1":"zones à explorer, du sol rocailleux jusqu'aux failles de la réalité.",
+    "about.card2":"minerais et cristaux différents à extraire et collectionner.",
+    "about.card3":"l'Infinitium, la ressource finale — d'une rareté presque mythique.",
+    "zones.title":"Les 21 zones",
+    "zones.desc":"Chaque zone contient 6 minerais. Clique sur une zone pour voir ce qu'on peut y trouver.",
+    "zones.expand_all":"Tout déplier",
+    "zones.collapse_all":"Tout replier",
+    "infinitium.title":"Infinitium",
+    "infinitium.desc":"La ressource finale du jeu. Elle pousse extrêmement rarement — atteindre l'Infinitium marque la fin absolue de la progression de Cavernium.",
+    "footer.note":"Cavernium est un jeu créé sur Roblox. Ce site est un fan-hub non officiel hébergé sur GitHub Pages.",
+    "footer.playlink":"jouer sur Roblox",
+    "footer.madewith":"fait avec ⛏️ et beaucoup de cristaux"
+  },
+  en: {
+    "nav.about":"About",
+    "nav.zones":"Zones",
+    "hero.eyebrow":"A Roblox mining game",
+    "hero.title":'Dig ever <span class="accent">deeper</span>',
+    "hero.desc":"From ordinary pebbles to crystals from another reality: Cavernium takes you down through 21 mining zones, all the way to the ultimate resource — Infinitium.",
+    "hero.cta_play":"Play on Roblox",
+    "hero.cta_zones":"See the zones",
+    "about.title":"One goal: dig",
+    "about.desc":"Cavernium is built on a simple but long progression: each zone reveals rarer ores than the last, all the way down to the most remote depths of the world.",
+    "about.card1":"zones to explore, from rocky ground to fractures in reality itself.",
+    "about.card2":"different ores and crystals to mine and collect.",
+    "about.card3":"Infinitium, the final resource — almost mythically rare.",
+    "zones.title":"The 21 zones",
+    "zones.desc":"Each zone holds 6 ores. Click a zone to see what you can find there.",
+    "zones.expand_all":"Expand all",
+    "zones.collapse_all":"Collapse all",
+    "infinitium.title":"Infinitium",
+    "infinitium.desc":"The game's final resource. It grows extremely rarely — reaching Infinitium marks the absolute end of Cavernium's progression.",
+    "footer.note":"Cavernium is a game built on Roblox. This site is an unofficial fan hub hosted on GitHub Pages.",
+    "footer.playlink":"play on Roblox",
+    "footer.madewith":"made with ⛏️ and a lot of crystals"
+  }
+};
+
+/* !!! Replace this with your real Roblox game link !!! */
+const ROBLOX_LINK = "https://www.roblox.com/games/";
+
+let currentLang = "fr";
+
+function renderZones(lang){
+  const container = document.getElementById("path-container");
+  container.innerHTML = "";
+  ZONES.forEach((zone, i) => {
+    const el = document.createElement("div");
+    el.className = "zone";
+    el.style.setProperty("--zone-color", zone.color);
+    const itemsHtml = zone.items.map(pair => `<li>${lang === "fr" ? pair[0] : pair[1]}</li>`).join("");
+    el.innerHTML = `
+      <button class="zone-head" type="button" aria-expanded="false">
+        <span class="zone-num">${String(i+1).padStart(2,"0")}</span>
+        <span class="zone-icon">${zone.icon}</span>
+        <span class="zone-name">${lang === "fr" ? zone.fr : zone.en}</span>
+        <span class="zone-chevron">⌄</span>
+      </button>
+      <div class="zone-body">
+        <ul class="zone-items">${itemsHtml}</ul>
+      </div>
+    `;
+    const head = el.querySelector(".zone-head");
+    head.addEventListener("click", () => {
+      const willOpen = !el.classList.contains("open");
+      el.classList.toggle("open");
+      head.setAttribute("aria-expanded", String(willOpen));
+    });
+    container.appendChild(el);
+  });
+
+  const infi = document.createElement("div");
+  infi.className = "infinitium";
+  infi.innerHTML = `
+    <h3>♾️ ${I18N[lang]["infinitium.title"]}</h3>
+    <p>${I18N[lang]["infinitium.desc"]}</p>
+  `;
+  container.appendChild(infi);
+}
+
+function applyI18n(lang){
+  currentLang = lang;
+  document.getElementById("html-root").setAttribute("lang", lang);
+  document.querySelectorAll("[data-i18n]").forEach(node => {
+    const key = node.getAttribute("data-i18n");
+    if (I18N[lang][key] !== undefined) node.innerHTML = I18N[lang][key];
+  });
+  document.getElementById("lang-toggle").textContent = lang === "fr" ? "EN" : "FR";
+  document.getElementById("toggle-all").dataset.expanded = "false";
+  document.getElementById("toggle-all").textContent = I18N[lang]["zones.expand_all"];
+  document.getElementById("play-link").href = ROBLOX_LINK;
+  document.getElementById("footer-play").href = ROBLOX_LINK;
+  renderZones(lang);
+}
+
+document.querySelectorAll(".gate-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const lang = btn.getAttribute("data-lang");
+    document.getElementById("lang-gate").classList.add("hidden");
+    document.getElementById("site").classList.remove("hidden");
+    applyI18n(lang);
+  });
+});
+
+document.getElementById("lang-toggle").addEventListener("click", () => {
+  applyI18n(currentLang === "fr" ? "en" : "fr");
+});
+
+document.getElementById("toggle-all").addEventListener("click", function(){
+  const expand = this.dataset.expanded !== "true";
+  document.querySelectorAll(".zone").forEach(z => {
+    z.classList.toggle("open", expand);
+    z.querySelector(".zone-head").setAttribute("aria-expanded", String(expand));
+  });
+  this.dataset.expanded = String(expand);
+  this.textContent = expand ? I18N[currentLang]["zones.collapse_all"] : I18N[currentLang]["zones.expand_all"];
+});
+</script>
+</body>
+</html>
